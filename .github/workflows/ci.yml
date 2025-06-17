@@ -46,11 +46,17 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 22
       - uses: sbt/setup-sbt@v1
 
       - name: coursier-cache
         uses: coursier/cache-action@v6
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+            gpg_private_key: ${{ secrets.PGP_SECRET }}
+            passphrase: ${{ secrets.PGP_PASSPHRASE }}
 
       - name: Publish artifacts
         env:
@@ -58,5 +64,4 @@ jobs:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          GPG_TTY: $(tty)
         run: sbt ci-release
