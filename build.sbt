@@ -43,7 +43,7 @@ val commonSettings = Vector(
     "-Yshow-suppressed-errors",
     "-Yexplicit-nulls"
   )
-)
+) ++ publishSettings
 
 lazy val core = project
     .in(modules / "core")
