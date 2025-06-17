@@ -1,13 +1,7 @@
-name := "volga"
-
 val publishVersion = "0.2.0.1"
 
 val scala3version = "3.5.2"
 val scala2version = "2.13.14"
-
-crossScalaVersions := List(scala3version, scala2version)
-
-publish / skip := true
 
 val oldMacroDeps = List(
   libraryDependencies ++= List(
@@ -37,7 +31,7 @@ val publishSettings = List(
     )
   ),
   organization      := "tf.tofu",
-  versionScheme := Some("semver-spec"),
+  versionScheme     := Some("semver-spec"),
   licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 )
 
@@ -56,7 +50,7 @@ lazy val core = project
     .settings(
       commonSettings,
       libraryDependencies += "net.sourceforge.plantuml" % "plantuml" % "1.2022.14" % Test,
-      libraryDependencies += "org.scalameta"           %% "munit"    % "1.0.0-M7"    % Test
+      libraryDependencies += "org.scalameta"           %% "munit"    % "1.0.0-M7"  % Test
     )
 
 lazy val prob = project.in(modules / "prob").settings(commonSettings).dependsOn(core)
@@ -77,7 +71,7 @@ val oldSettings = Vector(
     "org.scalacheck"    %% "scalacheck"      % "1.15.4",
     "org.scalatestplus" %% "scalacheck-1-17" % "3.2.14.0",
     "org.typelevel"     %% "mouse"           % "1.2.0"
-  ) map (_               % Test),
+  ) map (_ % Test),
   libraryDependencies ++=
       List(
         compilerPlugin("org.typelevel" % "kind-projector"     % "0.13.3" cross CrossVersion.patch),
@@ -101,5 +95,12 @@ lazy val oldCore = project.in(old / "core").settings(oldSettings)
 
 lazy val oldMacros = project.in(old / "macros").settings(oldSettings ++ oldMacroDeps).dependsOn(oldCore)
 
-lazy val volga = project.in(file(".")).aggregate(core)
-
+lazy val volga = project
+    .in(file("."))
+    .settings(
+      publish / skip     := true,
+      crossScalaVersions := List(scala3version, scala2version),
+      publishSettings,
+      name               := "volga"
+    )
+    .aggregate(core)
