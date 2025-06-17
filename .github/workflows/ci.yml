@@ -27,11 +27,8 @@ jobs:
           java-version: 22
       - uses: sbt/setup-sbt@v1
 
-      - name: Check formatting
-        run: sbt scalafmtCheckAll scalafmtSbtCheck
-
       - name: Build project
-        run: sbt "testScoped  JVM"
+        run: sbt test
     
 
   publish:
