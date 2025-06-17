@@ -37,11 +37,6 @@ val publishSettings = List(
     )
   ),
   organization      := "tf.tofu",
-  version           := {
-      val branch = git.gitCurrentBranch.value
-      if (branch == "master") publishVersion
-      else s"$publishVersion-$branch-SNAPSHOT"
-  },
   versionScheme := Some("semver-spec"),
   licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 )
