@@ -46,8 +46,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 22
-          gpg-private-key: ${{ secrets.PGP_SECRET }}
-          gpg-passphrase: ${{ secrets.PGP_PASSPHRASE }} 
       - uses: sbt/setup-sbt@v1
 
       - name: coursier-cache
