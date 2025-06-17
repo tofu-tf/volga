@@ -1,6 +1,6 @@
 name := "volga"
 
-val publishVersion = "0.2"
+val publishVersion = "0.2.0.1"
 
 val scala3version = "3.5.2"
 val scala2version = "2.13.14"
@@ -21,10 +21,10 @@ val modules = file("modules")
 val publishSettings = List(
   moduleName        := { "volga-" + name.value },
   publishMavenStyle := true,
-  homepage          := Some(url("https://manatki.org/docs/derevo")),
+  homepage          := Some(url("https://manatki.org/tf-tofu/volga")),
   scmInfo           := Some(
     ScmInfo(
-      url("https://github.com/manatki/derevo"),
+      url("https://github.com/tf-tofu/volga"),
       "git@github.com:manatki/derevo.git"
     )
   ),
@@ -36,12 +36,13 @@ val publishSettings = List(
       url("https://github.com/odomontois")
     )
   ),
-  organization      := "org.manatki",
+  organization      := "tf.tofu",
   version           := {
       val branch = git.gitCurrentBranch.value
       if (branch == "master") publishVersion
       else s"$publishVersion-$branch-SNAPSHOT"
   },
+  versionScheme := Some("semver-spec"),
   licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 )
 
@@ -49,9 +50,7 @@ val commonSettings = Vector(
   scalaVersion       := scala3version,
   crossScalaVersions := List(scala3version),
   scalacOptions ++= Vector(
-    // "-source",
-    // "future",
-    "-Ykind-projector:underscores",
+    "-Xkind-projector:underscores",
     "-Yshow-suppressed-errors",
     "-Yexplicit-nulls"
   )
@@ -106,3 +105,6 @@ lazy val old = modules / "old"
 lazy val oldCore = project.in(old / "core").settings(oldSettings)
 
 lazy val oldMacros = project.in(old / "macros").settings(oldSettings ++ oldMacroDeps).dependsOn(oldCore)
+
+lazy val volga = project.in(file(".")).aggregate(core)
+

@@ -1,0 +1,62 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: ['master']
+  push:
+    branches: ['master']
+    tags: [v*]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  CI: true
+
+jobs:
+  build:
+    name: Build and Test
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: coursier/cache-action@v6
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 22
+      - uses: sbt/setup-sbt@v1
+
+      - name: Check formatting
+        run: sbt scalafmtCheckAll scalafmtSbtCheck
+
+      - name: Build project
+        run: sbt "testScoped  JVM"
+    
+
+  publish:
+    name: Publish Artifacts
+    needs: [build]
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 22
+      - uses: sbt/setup-sbt@v1
+
+      - name: coursier-cache
+        uses: coursier/cache-action@v6
+
+      - name: Publish artifacts
+        env:
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        run: sbt ci-release
